@@ -363,6 +363,12 @@ list<kaddr> writeStructChild423(ofstream &sdk, kaddr childprop) {
         kaddr prop = child;
         string oname = FField::getName(prop);
         string cname = FField::getClassName(prop);
+        // if (isVerbose) {
+        //     cout << "oname: " << oname << endl;
+        //     cout << "cname: " << cname << endl;
+        //     cout << endl;
+        // }
+
 
         if (isEqual(cname, "ObjectProperty") || isEqual(cname, "WeakObjectProperty") ||
             isEqual(cname, "LazyObjectProperty") || isEqual(cname, "AssetObjectProperty") ||

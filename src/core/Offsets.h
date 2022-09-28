@@ -195,19 +195,19 @@ namespace Offsets {
         FUObjectArrayToTUObjectArray = 0x10;    // TUObjectArray ObjObjects;   4+4+4+1+padding(3) = 0x10
         //Class: TUObjectArray
         TUObjectArrayToNumElements = 0xC;   // TODO
-        //Class: UObject
+        //Class: UObject    sizeof(UObject) == 0x28(vtavle + data)
         // UObject定义在 Engine\Source\Runtime\CoreUObject\Public\UObject\Object.h
         // vtable + offset(objectFlags) = 0xc
-        UObjectToInternalIndex = 0xC;   // int32		InternalIndex;  0xc sizeof(int32) = 0x4
-        UObjectToClassPrivate = 0x10;   // UClass*		ClassPrivate;   0xc+4 = 0x10    sizeof(UClass*) = 0x8
-        UObjectToFNameIndex = 0x18;     // FName		NamePrivate;    0x10+0x8 = 0x18     sizeof(FName) = 0x8     FName.ComparisonIndex.Value
-        UObjectToOuterPrivate = 0x20;   // UObject*		OuterPrivate;   0x18+0x8 = 0x20     sizeof(UObject*) = 0x8
+        UObjectToInternalIndex = 0xC;   // int32		InternalIndex;  0xc sizeof(int32) = 0x4     一致
+        UObjectToClassPrivate = 0x10;   // UClass*		ClassPrivate;   0xc+4 = 0x10    sizeof(UClass*) = 0x8   一致
+        UObjectToFNameIndex = 0x18;     // FName		NamePrivate;    0x10+0x8 = 0x18     sizeof(FName) = 0x8     FName.ComparisonIndex.Value     一致
+        UObjectToOuterPrivate = 0x20;   // UObject*		OuterPrivate;   0x18+0x8 = 0x20     sizeof(UObject*) = 0x8  一致
         //Class: UField
         // UField定义在 Engine\Source\Runtime\CoreUObject\Public\UObject\Class.h
-        UFieldToNext = 0x28;            // UField* Next; 0x0 + sizeof(UObject) = 0x28
+        UFieldToNext = 0x28;            // UField* Next;     
         //Class: UStruct
-        UStructToSuperStruct = 0x30;    // UStruct* SuperStruct;
-        UStructToChildren = 0x38;       // UField* Children;
+        UStructToSuperStruct = 0x40;    // UStruct* SuperStruct;    该偏移可能有问题   4.26.2 修正为 0x40
+        UStructToChildren = 0x48;       // UField* Children;   4.26.2 修正为 0x48
         //Class: UFunction
         UFunctionToFunctionFlags = 0x88;    //  EFunctionFlags FunctionFlags;
         UFunctionToFunc = 0xB0;             //  FNativeFuncPtr Func;
@@ -236,7 +236,7 @@ namespace Offsets {
         //Class: UStructProperty
         UStructPropertyToStruct = 0x70;     //  class UScriptStruct* Struct;
         //Class: UWorld
-        UWorldToPersistentLevel = 0x30;     //  class ULevel*	PersistentLevel;
+        UWorldToPersistentLevel = 0x30;     //  class ULevel*	PersistentLevel;    一致
         //Class: ULevel
         ULevelToAActors = 0x98;             //  TArray<AActor*> Actors;
         ULevelToAActorsCount = 0xA0;
@@ -244,22 +244,22 @@ namespace Offsets {
 
     void patchUE423_64() {
         //Class: FNamePool
-        FNameStride = 0x2;                  //  TODO
-        GNamesToFNamePool = 0x30;           //  TODO
-        FNamePoolToCurrentBlock = 0x8;      //  uint32 CurrentBlock = 0;
-        FNamePoolToCurrentByteCursor = 0xC; //  uint32 CurrentByteCursor = 0;
-        FNamePoolToBlocks = 0x10;           //  uint8* Blocks[FNameMaxBlocks] = {};
+        FNameStride = 0x2;                  //  alignof(FNameEntry)     一致
+        GNamesToFNamePool = 0x30;           //  padding 
+        FNamePoolToCurrentBlock = 0x8;      //  uint32 CurrentBlock = 0;    一致
+        FNamePoolToCurrentByteCursor = 0xC; //  uint32 CurrentByteCursor = 0;   一致
+        FNamePoolToBlocks = 0x10;           //  uint8* Blocks[FNameMaxBlocks] = {};     一致
         //Class: FNameEntry
-        FNameEntryToLenBit = 6;
-        FNameEntryToString = 0x2;
+        FNameEntryToLenBit = 6;             //  uint16 Len : 10;    一致
+        FNameEntryToString = 0x2;           //  一致
         //Class: TUObjectArray
-        TUObjectArrayToNumElements = 0x14;
+        TUObjectArrayToNumElements = 0x14;  //  一致
         //Class: UStruct
-        UStructToChildProperties = 0x44;
+        UStructToChildProperties = 0x50;    //  4.23.0中没有该字段, 4.26.2中出现   4.26.2修正为0x50
         //Class: FField
-        FFieldToClass = 0x8;
-        FFieldToNext = 0x20;
-        FFieldToName = 0x28;
+        FFieldToClass = 0x8;    // FFieldClass* ClassPrivate; 一致
+        FFieldToNext = 0x20;    // FField* Next; 一致
+        FFieldToName = 0x28;    // FName NamePrivate; 一致 
     }
 
     void patchCustom_64() {
