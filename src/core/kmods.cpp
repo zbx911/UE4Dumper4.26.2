@@ -155,6 +155,7 @@ int main(int argc, char *argv[]) {
     Offsets::initOffsets_64();
     if (isUE423) {
         Offsets::patchUE423_64();
+        Offsets::patchUE426_64();
     }
     Offsets::patchCustom_64();
 #else
